@@ -22,6 +22,18 @@ class _student_database:
             class_info.append(students)
             self.classes[cid] = class_info
 
+    # Clears the database of all class information
+    def reset_classes(self):
+        self.classes.clear()
+
+    # Clears the database of all student information
+    def reset_students(self):
+        self.students.clear()
+
+    # Clears the database of all image information
+    def reset_images(self):
+        self.images.clear()
+
 if __name__ == '__main__':
     sdb = _student_database()
     sdb.load_classes("../data/classes.csv")

@@ -1,99 +1,48 @@
 from _student_database import _student_database 
+import unittest
 
-def test_all(sdb):
-    failures = 0
-    if test_get_students(sdb) == True:
-        print(".")
-    else:
-        print("F")
-        failures = failures + 1
+class TestStudentDatabase(unittest.TestCase):
 
-    if test_get_professor(sdb) == True:
-        print(".")
-    else:
-        print("F")
+    # Unit tests for Participation Service API
 
-    if test_get_class(sdb) == True:
-        print(".")
-    else:
-        print("F")
+    sdb = _student_database()
 
-    if test_get_goal(sdb) == True:
-        print(".")
-    else:
-        print("F")
+    def reset_data(self):
+        self.sdb.reset_classes()
+        self.sdb.reset_students()
+        self.sdb.reset_images()
+        self.sdb.load_classes("../data/classes.csv")
 
-    if test_set_goal(sdb) == True:
-        print(".")
-    else:
-        print("F")
+    def test_get_students(self):
+        self.reset_data()
+        students = self.sdb.classes[1][3]
+        correct_students = [1,3,6,8,10,11,12,13,14]
+        self.assertEqual(students, correct_students)   
 
-    print("Failed " + str(failures) + " tests")
+    def test_get_professor(self):
+        self.reset_data()
+        prof = self.sdb.classes[0][1]
+        correct_prof = "Prof. Kumar"
+        self.assertEqual(prof, correct_prof)
 
-def test_get_students(sdb):
-    if sdb.classes[0][3] != [1,2,3,4,5,6,7,8,9]:
-        return False
-    elif sdb.classes[1][3] != [1,3,6,8,10,11,12,13,14]:
-        return False
-    elif sdb.classes[2][3] != [1,2,3,4,5,6,7,8,9]:
-        return False
-    elif sdb.classes[3][3] != [1,15,16,17,18,19,20 ]:
-        return False
-    elif sdb.classes[4][3] != [2,3,4,5,6]:
-        return False
-    else:
-        return True    
+    def test_get_class(self):
+        self.reset_data()
+        course = self.sdb.classes[3][0]
+        correct_course = "Accountancy"
+        self.assertEqual(course, correct_course)
 
-def test_get_professor(sdb):
-   if sdb.classes[0][1] != "Prof. Kumar":
-       return False
-   elif sdb.classes[1][1] != "Prof. Bui":
-       return False
-   elif sdb.classes[2][1] != "Prof. Kogge":
-       return False
-   elif sdb.classes[3][1] != "Prof. Stober":
-       return False
-   elif sdb.classes[4][1] != "Prof. Kumar":
-       return False
-   else:
-       return True
+    def test_get_goal(self):
+        self.reset_data()
+        goal = self.sdb.classes[4][2]
+        correct_goal = 50
+        self.assertEqual(goal, correct_goal)
 
-def test_get_class(sdb):
-   if sdb.classes[0][0] != "Programming Paradigms":
-       return False
-   elif sdb.classes[1][0] != "Computer Ethics":
-       return False
-   elif sdb.classes[2][0] != "Theory of Computing":
-       return False
-   elif sdb.classes[3][0] != "Accountancy":
-       return False
-   elif sdb.classes[4][0] != "Discrete Math":
-       return False
-   else:
-       return True
-
-def test_get_goal(sdb):
-    if sdb.classes[0][2] != 50:
-       return False
-    elif sdb.classes[1][2] != 12:
-       return False
-    elif sdb.classes[2][2] != 5:
-       return False
-    elif sdb.classes[3][2] != 35:
-       return False
-    elif sdb.classes[4][2] != 50:
-       return False
-    else:
-       return True
-
-def test_set_goal(sdb):
-    sdb.set_goal(2, 5000)
-    if sdb.classes[2][2] != 5000:
-       return False
-    else:
-       return True
+    def test_set_goal(self):
+        self.reset_data()
+        self.sdb.set_goal(4, 5000)
+        goal = self.sdb.classes[4][2]
+        correct_goal = 5000
+        self.assertEqual(goal, correct_goal)
 
 if __name__ == '__main__':
-    sdb = _student_database()
-    sdb.load_classes("../data/classes.csv")
-    test_all(sdb)
+    unittest.main()

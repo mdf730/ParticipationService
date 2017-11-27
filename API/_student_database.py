@@ -65,6 +65,22 @@ class _student_database:
         point_num = int(point_num)
         self.classes[cid][2] = point_num
 
+    # Return the highest number of participation points a student in the class
+    # has
+    #
+    # CAN'T MAKE TEST FOR THIS UNTIL get_points IS IMPLEMENTED
+    #
+    #
+    def calculate_max(self, cid):
+        cid = int(cid)
+        students = self.get_students(cid)
+        highest_point_value = -1
+        for student in students:
+            current_point_value = self.get_points(student)
+            if current_point_value > highest_point_value:
+                highest_point_value = current_point_value
+        return highest_point_value
+
 if __name__ == '__main__':
     sdb = _student_database()
     sdb.load_classes("../data/classes.csv")

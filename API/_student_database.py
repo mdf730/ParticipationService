@@ -44,6 +44,8 @@ class _student_database:
             #print("TESTING LOAD_STUDENTS")
             #print(classes)
             self.students[sid] = parsed_info
+        print(self.students)
+        print("\n\n\n\n\n\n")
         f.close()
 
     # Open a file with the name given as a parameter and loads the student

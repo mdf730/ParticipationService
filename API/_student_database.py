@@ -58,6 +58,8 @@ class _student_database:
         cid = int(cid)
         return self.classes[cid][2]
 
+    # Set the participation point goal of the class indicated by the given class
+    # ID to the number indicated by the given point_num
     def set_goal(self, cid, point_num):
         cid = int(cid)
         point_num = int(point_num)

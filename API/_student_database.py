@@ -60,6 +60,12 @@ class _student_database:
             self.images[sid] = url
         f.close()
 
+    # Clear all databases  
+    def reset_all(self):
+        self.classes.clear()
+        self.students.clear()
+        self.images.clear()
+
     # Clears the database of all class information
     def reset_classes(self):
         self.classes.clear()

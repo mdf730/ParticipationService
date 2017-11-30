@@ -53,11 +53,10 @@ class Images(object):
 		self.sdb.load_students('/home/mfabian1/students.csv')
 		self.sdb.load_images('/home/mfabian1/students.csv')
 
-
 ##################################
 # FUNCTIONS
 ##################################
-def start_service()
+def start_service():
 	sdb = _student_database()
 	students = Students(sdb)
 	classes = Classes(sdb)
@@ -67,7 +66,7 @@ def start_service()
 	# Students
 
 	#GET:
-	dispatcher.connect('student_get', '/student/:id',controller=student,action = 'GET',conditions=dict(method=['GET']))
+	dispatcher.connect('student_get', '/student/:id',controller=students,action = 'GET',conditions=dict(method=['GET']))
 
 
 	# Classes
@@ -75,4 +74,13 @@ def start_service()
 	# Images
 
 	# Configuration
-	conf = {'global': {'server.socket_host': 'student04.cse.nd.edu/mfabian1/particip8', 'server.socket_port': 80}, '/' : {'request.dispatch':dispatcher}}
+	conf = {'global': {'server.socket_host': 'student04.cse.nd.edu', 'server.socket_port': 51029},'/' : {'request.dispatch':dispatcher}}
+	
+	#Update configuration and start the server
+	cherrypy.config.update(conf)
+	app = cherrypy.tree.mount(None, config=conf)
+	cherrypy.quickstart(app)
+
+
+if __name__ == '__main__':
+	start_service()

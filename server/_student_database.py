@@ -7,6 +7,7 @@ class _student_database:
         self.students = {}
         self.classes = {}
         self.images = {}
+        self.highest_cid = 0
 
     # Opens a file with the name given as a parameter and loads the class
     # data from that file into a dictionary with class ID as a key
@@ -16,6 +17,8 @@ class _student_database:
         for line in f:
             class_info = line.strip().split(",")
             cid = int(class_info[0])
+            if cid > self.highest_cid:
+                self.highest_cid = cid
             students = []
             for sid in range(4, len(class_info)):
                 students.append(int(class_info[sid]))
@@ -23,6 +26,7 @@ class _student_database:
             class_info[2] = int(class_info[2])
             class_info.append(students)
             self.classes[cid] = class_info
+            print(class_info)
         f.close()
 
     # Open a file with the name given as a parameter and loads the student
@@ -43,6 +47,7 @@ class _student_database:
             parsed_info.append(classes)
             #print("TESTING LOAD_STUDENTS")
             #print(classes)
+            print(parsed_info)
             self.students[sid] = parsed_info
         print(self.students)
         print("\n\n\n\n\n\n")
@@ -164,13 +169,23 @@ class _student_database:
                 highest_point_value = int(current_point_value)
         return highest_point_value
 
-
+    # delete a student with specified sid from class with specified sid
+    def delete_from_class(self, sid, cid):
+        cid = int(cid)
+        sid = int(sid)
+        if sid in self.classes[cid][3]:
+            self.classes[cid][3].remove(sid)
 
 if __name__ == '__main__':
     sdb = _student_database()
     sdb.load_classes("../data/classes.csv")
     sdb.load_students("../data/students.csv")
-    print(sdb.get_goal(2))
-    print(sdb.get_points(1,1))
-    sdb.set_goal(2, 100)
-    print(sdb.get_goal(2))
+    print(sdb.classes)
+    print(" ")
+    sdb.delete_from_class(1,0)
+    print(sdb.classes)
+    #print(sdb.get_goal(2))
+    #print(sdb.get_points(1,1))
+    #sdb.set_goal(2, 100)
+    #print(sdb.get_goal(2))
+    

@@ -223,6 +223,28 @@ class Images(object):
 			output['url'] = url
 		return json.dumps(output)
 
+
+##################################
+# RESET HANDLER
+##################################
+class Reset(object):
+    def __init__(self, db):
+        self.sdb = db
+
+    # recreates database from .dat files
+    def PUT(self):
+        output = {"result" : "success"}
+        try:
+            self.sdb.load_classes('/home/mfabian1/classes.csv')
+            self.sdb.load_students('/home/mfabian1/students.csv')
+            self.sdb.load_images('/home/mfabian1/students.csv')
+
+        except Exception as ex:
+            output['result'] = 'error'
+            output['message'] = str(ex)
+        return json.dumps(output)
+		
+
 ##################################
 # FUNCTIONS
 ##################################
@@ -231,7 +253,11 @@ def start_service():
 	students = Students(sdb)
 	classes = Classes(sdb)
 	images = Images(sdb)
+	reset = Reset(sdb)
 	dispatcher = cherrypy.dispatch.RoutesDispatcher()
+
+	###### Reset ######
+	dispatcher.connect('reset_all', '/reset/',controller=reset,action = 'PUT',conditions=dict(method=['PUT']))
 
 	###### Students ######
 

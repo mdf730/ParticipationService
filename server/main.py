@@ -50,7 +50,7 @@ class Students(object):
 			output['result'] = str(ex)
 		return json.dumps(output)
 
-        #DELETE for /students/{studentID}/{classID}
+    #DELETE for /students/{studentID}/{classID}
 	def DELETE(self,sid=None,cid=None):
 		output = {"result" : "success"}
 		sid = int(sid)
@@ -127,6 +127,8 @@ class Classes(object):
 	#GET for /class/:id
 	def GET_ALL(self, id=None):
 		output = {'result':'success'}
+		output['cid'] = str(id)
+		output['name'] = self.sdb.get_class(id);
 		output['students'] = []
 		for sid in self.sdb.get_students(id):
 			student = self.sdb.get_student(sid)
@@ -137,7 +139,7 @@ class Classes(object):
 				output['students'].append(info)
 		return json.dumps(output)
 
-        #GET for /class/
+    #GET for /class/
 	def GET(self):
 		output = {"result" : "success"}
 		try:
@@ -146,8 +148,11 @@ class Classes(object):
 				my_class = {}
 				class_info = self.sdb.classes[cid]
 				my_class["name"] = class_info[0]
+				my_class["cid"] = cid
 				my_class["prof"] = class_info[1]
 				my_class["point_goal"] = int(class_info[2])
+				my_class["avg_points"] = round(self.sdb.calculate_average(cid),2)
+				my_class["max_points"] = self.sdb.calculate_max(cid)
 				my_class["students"] = class_info[3]
 				entries.append(my_class)
 			output["classes"] = entries
@@ -246,6 +251,19 @@ class Reset(object):
 		
 
 ##################################
+# CORS STUFF
+##################################
+class Options:
+    def OPTIONS(self, *args, **kwargs):
+            return ""
+
+def CORS():
+    cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
+    cherrypy.response.headers["Access-Control-Allow-Methods"] = "GET, PUT, POST, DELETE, OPTIONS"
+    cherrypy.response.headers["Access-Control-Allow-Credentials"] = "true"
+
+
+##################################
 # FUNCTIONS
 ##################################
 def start_service():
@@ -254,6 +272,7 @@ def start_service():
 	classes = Classes(sdb)
 	images = Images(sdb)
 	reset = Reset(sdb)
+	optionsController = Options()
 	dispatcher = cherrypy.dispatch.RoutesDispatcher()
 
 	###### Reset ######
@@ -268,9 +287,7 @@ def start_service():
 	#PUT
 	dispatcher.connect('points_put','/student/:sid/:cid',controller=students,action = 'PUT_POINTS',conditions=dict(method=['PUT']))
 	dispatcher.connect('student_put','/student/:sid',controller=students,action = 'PUT',conditions=dict(method=['PUT']))
-
-
-        #DELETE
+    #DELETE
 	dispatcher.connect('student_delete','/student/:sid/:cid',controller=students,action = 'DELETE', conditions=dict(method=['DELETE']))
 	dispatcher.connect('student_delete_all','/student/',controller=students,action= 'DELETE_ALL', conditions=dict(method=['DELETE']))
 
@@ -279,22 +296,26 @@ def start_service():
 	#GET
 	dispatcher.connect('class_get', '/class/:id',controller=classes,action = 'GET_ALL',conditions=dict(method=['GET']))
 	dispatcher.connect('class', '/class/',controller=classes,action = 'GET',conditions=dict(method=['GET']))
-
 	#DELETE
 	dispatcher.connect('delete_classes', '/class/',controller=classes,action = 'DELETE', conditions=dict(method=['DELETE']))
 	dispatcher.connect('delete_class', '/class/:cid',controller=classes,action = 'DELETE_CLASS', conditions=dict(method=['DELETE']))
-
 	#PUT
 	dispatcher.connect('class_put','/class/:cid',controller=classes,action = 'PUT',conditions=dict(method=['PUT']))
 
 	###### Images ######
-
-	#GET:
+	#GET
 	dispatcher.connect('image_get', '/image/:id',controller=images,action = 'GET',conditions=dict(method=['GET']))
 
+	###### OPTIONS #####
+	dispatcher.connect('options_student_id', '/student/:id', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
+	dispatcher.connect('options_points', '/student/:sid/:cid', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
+	dispatcher.connect('options_student', '/student/', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
+	dispatcher.connect('options_class_id', '/class/:id', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
+	dispatcher.connect('options_class', '/class/', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
+	dispatcher.connect('options_image_id', '/image/:id', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
 
 	# Configuration
-	conf = {'global': {'server.socket_host': 'student04.cse.nd.edu', 'server.socket_port': 51029},'/' : {'request.dispatch':dispatcher}}
+	conf = {'global': {'server.socket_host': 'student04.cse.nd.edu', 'server.socket_port': 51029},'/' : {'request.dispatch':dispatcher,'tools.CORS.on':True,}}
 
 	#Update configuration and start the server
 	cherrypy.config.update(conf)
@@ -303,4 +324,5 @@ def start_service():
 
 
 if __name__ == '__main__':
+	cherrypy.tools.CORS = cherrypy.Tool('before_finalize', CORS)
 	start_service()

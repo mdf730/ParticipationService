@@ -45,12 +45,10 @@ class _student_database:
             parsed_info = []
             parsed_info.append(student_info[1])
             parsed_info.append(classes)
+            parsed_info.append(student_info[2])
             #print("TESTING LOAD_STUDENTS")
             #print(classes)
-            print(parsed_info)
             self.students[sid] = parsed_info
-        print(self.students)
-        print("\n\n\n\n\n\n")
         f.close()
 
     # Open a file with the name given as a parameter and loads the student
@@ -91,7 +89,7 @@ class _student_database:
     # Returns the url for the student's image based on their student id
     def get_image(self, sid):
         sid = int(sid)
-        return self.images[sid]
+        return self.students[sid][2]
 
     # Returns the number of participation points a particular student has in a particular class.
     # Based on student id and class id.
@@ -178,14 +176,5 @@ class _student_database:
 
 if __name__ == '__main__':
     sdb = _student_database()
-    sdb.load_classes("../data/classes.csv")
     sdb.load_students("../data/students.csv")
-    print(sdb.classes)
-    print(" ")
-    sdb.delete_from_class(1,0)
-    print(sdb.classes)
-    #print(sdb.get_goal(2))
-    #print(sdb.get_points(1,1))
-    #sdb.set_goal(2, 100)
-    #print(sdb.get_goal(2))
-    
+    print(sdb.get_image(1))

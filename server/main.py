@@ -12,19 +12,21 @@ class Students(object):
 		self.sdb = db
 		self.sdb.reset_all()
 		self.sdb.load_classes('/home/mfabian1/classes.csv')
-		self.sdb.load_students('/home/mfabian1/students.csv')
-		self.sdb.load_images('/home/mfabian1/students.csv')
+		self.sdb.load_students('/home/mfabian1/public_html/particip8/static/student.csv')
+		self.sdb.load_images('/home/mfabian1/public_html/particip8/static/student.csv')
 
 	#GET for /students/{studentID}
 	def GET(self, id=None):
 		output = {'result':'success'}
 		student = self.sdb.get_student(id)
+		URL = self.sdb.get_image(id)
 		if student is None:
 			output['result'] = 'error'
 			output['message'] = 'key not found'
 		else:
 			output['id'] = id
 			output['name'] = student
+			output['URL'] = URL
 		return json.dumps(output)
 
 	#GET for /students/{studentID}/{classID}
@@ -121,8 +123,8 @@ class Classes(object):
 		self.sdb = db
 		self.sdb.reset_all()
 		self.sdb.load_classes('/home/mfabian1/classes.csv')
-		self.sdb.load_students('/home/mfabian1/students.csv')
-		self.sdb.load_images('/home/mfabian1/students.csv')
+		self.sdb.load_students('/home/mfabian1/public_html/particip8/static/student.csv')
+		self.sdb.load_images('/home/mfabian1/public_html/particip8/static/student.csv')
 
 	#GET for /class/:id
 	def GET_ALL(self, id=None):
@@ -213,8 +215,8 @@ class Images(object):
 		self.sdb = db
 		self.sdb.reset_all()
 		self.sdb.load_classes('/home/mfabian1/classes.csv')
-		self.sdb.load_students('/home/mfabian1/students.csv')
-		self.sdb.load_images('/home/mfabian1/students.csv')
+		self.sdb.load_students('/home/mfabian1/public_html/particip8/static/student.csv')
+		self.sdb.load_images('/home/mfabian1/public_html/particip8/static/student.csv')
 	
 	#GET for /images/{studentID}
 	def GET(self, id=None):
@@ -241,8 +243,8 @@ class Reset(object):
         output = {"result" : "success"}
         try:
             self.sdb.load_classes('/home/mfabian1/classes.csv')
-            self.sdb.load_students('/home/mfabian1/students.csv')
-            self.sdb.load_images('/home/mfabian1/students.csv')
+            self.sdb.load_students('/home/mfabian1/public_html/particip8/static/student.csv')
+            self.sdb.load_images('/home/mfabian1/public_html/particip8/static/student.csv')
 
         except Exception as ex:
             output['result'] = 'error'
